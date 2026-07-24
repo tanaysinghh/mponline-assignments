@@ -20,3 +20,7 @@ Thumbs.db
 .vscode/
 .idea/
 cifar10-cnn/*.png 
+cartpole-rl/*.png 
+lunarlander-rl/*.png 
+lfw-cnn/*.png 
+cancer-mri-cnn/*.png 
