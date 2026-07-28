@@ -3,6 +3,13 @@
 A Flask web service that predicts whether a person earns more than \$50,000 per year
 from demographic and employment features, served as both an HTML form and a JSON REST API.
 
+## Live demo
+
+**[https://adult-income-predictor.onrender.com](https://adult-income-predictor.onrender.com)**
+
+> Free tier spins down after 15 minutes of inactivity — first request after idle takes
+> ~50 seconds (cold start).
+
 The model is a Logistic Regression trained on the UCI Adult Census Income dataset
 (32,561 records, 14 features). Measured test accuracy: **85.21%**.
 
@@ -74,10 +81,13 @@ gunicorn app:app
 
 ## API usage
 
+Examples below hit the live service. To run them against a local instance, swap the host
+for `http://localhost:5000`.
+
 ### `POST /predict`
 
 ```bash
-curl -X POST http://localhost:5000/predict \
+curl -X POST https://adult-income-predictor.onrender.com/predict \
   -H "Content-Type: application/json" \
   -d '{
     "age": 45,
@@ -111,7 +121,7 @@ are accepted as aliases for the dotted names.
 Invalid input returns HTTP 400 with an explanatory message rather than a 500:
 
 ```bash
-curl -X POST http://localhost:5000/predict \
+curl -X POST https://adult-income-predictor.onrender.com/predict \
   -H "Content-Type: application/json" \
   -d '{"age": "thirty"}'
 ```
@@ -123,7 +133,7 @@ curl -X POST http://localhost:5000/predict \
 ### `GET /health`
 
 ```bash
-curl http://localhost:5000/health
+curl https://adult-income-predictor.onrender.com/health
 ```
 
 ```json
@@ -166,8 +176,8 @@ curl http://localhost:5000/health
 
 ### Notes on the free tier
 
-- Free instances spin down after inactivity; the first request after idling can take
-  ~30–60 seconds while the service wakes.
+- Free instances spin down after 15 minutes of inactivity; the first request after idling
+  takes ~50 seconds while the service wakes.
 - The filesystem is ephemeral. Because the model is retrained on every build rather than
   stored, this costs nothing — but any files written at runtime will not persist.
 
