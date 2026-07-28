@@ -1,0 +1,10 @@
+*.pdf
+*.png
+__pycache__/
+.venv/
+.ipynb_checkpoints/
+.env
+*.faiss
+chroma/
+chroma_db/
+*.pkl
