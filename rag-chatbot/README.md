@@ -15,7 +15,7 @@ The PDF is downloaded fresh at notebook runtime and is **not** committed to the 
 - `pypdf` — PDF text extraction
 - `sentence-transformers` (`all-MiniLM-L6-v2`) — 384-dim sentence embeddings, CPU-friendly, no API key
 - `faiss-cpu` — local vector index with inner-product / cosine search
-- `anthropic` — Claude API client for the generation step
+- `google-generativeai` — Gemini API client for the generation step (free tier)
 - `numpy` — array plumbing
 
 ## Methodology
@@ -25,17 +25,17 @@ The PDF is downloaded fresh at notebook runtime and is **not** committed to the 
 3. **Embed** — `all-MiniLM-L6-v2` → normalized 384-dim vectors.
 4. **Index** — FAISS `IndexFlatIP` (inner product on unit vectors ≡ cosine similarity).
 5. **Retrieve** — `retrieve(query, k=4)` returns top-k chunks with similarity scores.
-6. **Generate** — Build a prompt that clearly separates *context* from *question*, instruct Claude Sonnet 4.5 to answer **only** from the provided context (else say it doesn't know), call the API, return the grounded answer.
+6. **Generate** — Build a prompt that clearly separates *context* from *question*, instruct Gemini Flash Lite to answer **only** from the provided context (else say it doesn't know), call the API, return the grounded answer.
 
 ## How to Run
 
 ```bash
-pip install sentence-transformers faiss-cpu pypdf anthropic jupyter
-export ANTHROPIC_API_KEY="sk-ant-..."   # required for Task 4 & 5 only
+pip install sentence-transformers faiss-cpu pypdf google-generativeai jupyter
+export GOOGLE_API_KEY="..."   # required for Task 4 & 5 only
 jupyter notebook rag_chatbot.ipynb
 ```
 
-Then Run All. Tasks 1–3 (download → chunk → embed → retrieve) run with no API key. Tasks 4–5 (Claude generation) require `ANTHROPIC_API_KEY` in the environment before launching the kernel.
+Get a free Gemini API key at https://aistudio.google.com/apikey. Then Run All. Tasks 1–3 (download → chunk → embed → retrieve) run with no API key. Tasks 4–5 (Gemini generation) require `GOOGLE_API_KEY` in the environment before launching the kernel.
 
 ## Example Q&A Output
 
@@ -54,4 +54,4 @@ RAG = **Retrieval** (find the most relevant passages from a trusted source using
 
 ## Conclusion
 
-The notebook implements a complete but minimal RAG pipeline: PDF → chunks → dense embeddings → FAISS retrieval → Claude generation with a context-only system prompt. It correctly answers technical questions about the Transformer and declines out-of-scope questions. Obvious next steps: hybrid (BM25 + dense) retrieval, cross-encoder re-ranking, semantic chunking that respects section boundaries, and conversation memory for follow-up turns.
+The notebook implements a complete but minimal RAG pipeline: PDF → chunks → dense embeddings → FAISS retrieval → Gemini generation with a context-only system prompt. It correctly answers technical questions about the Transformer and declines out-of-scope questions. Obvious next steps: hybrid (BM25 + dense) retrieval, cross-encoder re-ranking, semantic chunking that respects section boundaries, and conversation memory for follow-up turns.
