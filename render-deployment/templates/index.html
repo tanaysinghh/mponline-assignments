@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adult Census Income Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+
+    <header class="header">
+      <h1>Adult Census Income Predictor</h1>
+      <p class="subtitle">Predicts whether a person earns more than $50,000 per year.</p>
+    </header>
+
+    <section class="banner">
+      <strong>About this model</strong>
+      <p>
+        Logistic Regression trained on the UCI Adult Census Income dataset
+        (32,561 records, 14 demographic and employment features), with one-hot encoded
+        categorical variables and standardized numerical variables. Test accuracy is
+        approximately 85%. Predictions are statistical estimates from 1994 census data
+        and should not be used to make decisions about real individuals.
+      </p>
+    </section>
+
+    {% if error %}
+    <section class="alert alert-error">
+      <strong>Invalid input</strong>
+      <p>{{ error }}</p>
+    </section>
+    {% endif %}
+
+    {% if result %}
+    <section class="result {% if result.prediction == '>50K' %}result-high{% else %}result-low{% endif %}">
+      <p class="result-label">Predicted income</p>
+      <p class="result-value">{{ result.prediction }}</p>
+      <p class="result-detail">
+        Probability of earning &gt;$50K: <strong>{{ '%.1f'|format(result.probability * 100) }}%</strong>
+        &middot; Confidence in this prediction: <strong>{{ '%.1f'|format(result.confidence * 100) }}%</strong>
+      </p>
+    </section>
+    {% endif %}
+
+    <form method="post" action="/" class="form">
+
+      <fieldset>
+        <legend>Personal</legend>
+        <div class="grid">
+
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="17" max="90" step="1"
+                   value="{{ form['age'] }}" required>
+          </div>
+
+          <div class="field">
+            <label for="sex">Sex</label>
+            <select id="sex" name="sex">
+              <option value="Male" {% if form['sex'] == 'Male' %}selected{% endif %}>Male</option>
+              <option value="Female" {% if form['sex'] == 'Female' %}selected{% endif %}>Female</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="race">Race</label>
+            <select id="race" name="race">
+              <option value="White" {% if form['race'] == 'White' %}selected{% endif %}>White</option>
+              <option value="Black" {% if form['race'] == 'Black' %}selected{% endif %}>Black</option>
+              <option value="Asian-Pac-Islander" {% if form['race'] == 'Asian-Pac-Islander' %}selected{% endif %}>Asian-Pac-Islander</option>
+              <option value="Amer-Indian-Eskimo" {% if form['race'] == 'Amer-Indian-Eskimo' %}selected{% endif %}>Amer-Indian-Eskimo</option>
+              <option value="Other" {% if form['race'] == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="marital.status">Marital status</label>
+            <select id="marital.status" name="marital.status">
+              <option value="Married-civ-spouse" {% if form['marital.status'] == 'Married-civ-spouse' %}selected{% endif %}>Married-civ-spouse</option>
+              <option value="Never-married" {% if form['marital.status'] == 'Never-married' %}selected{% endif %}>Never-married</option>
+              <option value="Divorced" {% if form['marital.status'] == 'Divorced' %}selected{% endif %}>Divorced</option>
+              <option value="Separated" {% if form['marital.status'] == 'Separated' %}selected{% endif %}>Separated</option>
+              <option value="Widowed" {% if form['marital.status'] == 'Widowed' %}selected{% endif %}>Widowed</option>
+              <option value="Married-spouse-absent" {% if form['marital.status'] == 'Married-spouse-absent' %}selected{% endif %}>Married-spouse-absent</option>
+              <option value="Married-AF-spouse" {% if form['marital.status'] == 'Married-AF-spouse' %}selected{% endif %}>Married-AF-spouse</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="relationship">Relationship</label>
+            <select id="relationship" name="relationship">
+              <option value="Husband" {% if form['relationship'] == 'Husband' %}selected{% endif %}>Husband</option>
+              <option value="Wife" {% if form['relationship'] == 'Wife' %}selected{% endif %}>Wife</option>
+              <option value="Own-child" {% if form['relationship'] == 'Own-child' %}selected{% endif %}>Own-child</option>
+              <option value="Not-in-family" {% if form['relationship'] == 'Not-in-family' %}selected{% endif %}>Not-in-family</option>
+              <option value="Other-relative" {% if form['relationship'] == 'Other-relative' %}selected{% endif %}>Other-relative</option>
+              <option value="Unmarried" {% if form['relationship'] == 'Unmarried' %}selected{% endif %}>Unmarried</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="native.country">Native country</label>
+            <select id="native.country" name="native.country">
+              <option value="United-States" {% if form['native.country'] == 'United-States' %}selected{% endif %}>United-States</option>
+              <option value="Mexico" {% if form['native.country'] == 'Mexico' %}selected{% endif %}>Mexico</option>
+              <option value="Philippines" {% if form['native.country'] == 'Philippines' %}selected{% endif %}>Philippines</option>
+              <option value="Germany" {% if form['native.country'] == 'Germany' %}selected{% endif %}>Germany</option>
+              <option value="Canada" {% if form['native.country'] == 'Canada' %}selected{% endif %}>Canada</option>
+              <option value="Puerto-Rico" {% if form['native.country'] == 'Puerto-Rico' %}selected{% endif %}>Puerto-Rico</option>
+              <option value="El-Salvador" {% if form['native.country'] == 'El-Salvador' %}selected{% endif %}>El-Salvador</option>
+              <option value="India" {% if form['native.country'] == 'India' %}selected{% endif %}>India</option>
+              <option value="Cuba" {% if form['native.country'] == 'Cuba' %}selected{% endif %}>Cuba</option>
+              <option value="England" {% if form['native.country'] == 'England' %}selected{% endif %}>England</option>
+              <option value="Jamaica" {% if form['native.country'] == 'Jamaica' %}selected{% endif %}>Jamaica</option>
+              <option value="South" {% if form['native.country'] == 'South' %}selected{% endif %}>South</option>
+              <option value="China" {% if form['native.country'] == 'China' %}selected{% endif %}>China</option>
+              <option value="Italy" {% if form['native.country'] == 'Italy' %}selected{% endif %}>Italy</option>
+              <option value="Dominican-Republic" {% if form['native.country'] == 'Dominican-Republic' %}selected{% endif %}>Dominican-Republic</option>
+              <option value="Vietnam" {% if form['native.country'] == 'Vietnam' %}selected{% endif %}>Vietnam</option>
+              <option value="Guatemala" {% if form['native.country'] == 'Guatemala' %}selected{% endif %}>Guatemala</option>
+              <option value="Japan" {% if form['native.country'] == 'Japan' %}selected{% endif %}>Japan</option>
+              <option value="Poland" {% if form['native.country'] == 'Poland' %}selected{% endif %}>Poland</option>
+              <option value="Columbia" {% if form['native.country'] == 'Columbia' %}selected{% endif %}>Columbia</option>
+              <option value="Taiwan" {% if form['native.country'] == 'Taiwan' %}selected{% endif %}>Taiwan</option>
+              <option value="Haiti" {% if form['native.country'] == 'Haiti' %}selected{% endif %}>Haiti</option>
+              <option value="Iran" {% if form['native.country'] == 'Iran' %}selected{% endif %}>Iran</option>
+              <option value="Portugal" {% if form['native.country'] == 'Portugal' %}selected{% endif %}>Portugal</option>
+              <option value="Nicaragua" {% if form['native.country'] == 'Nicaragua' %}selected{% endif %}>Nicaragua</option>
+              <option value="Peru" {% if form['native.country'] == 'Peru' %}selected{% endif %}>Peru</option>
+              <option value="France" {% if form['native.country'] == 'France' %}selected{% endif %}>France</option>
+              <option value="Greece" {% if form['native.country'] == 'Greece' %}selected{% endif %}>Greece</option>
+              <option value="Ecuador" {% if form['native.country'] == 'Ecuador' %}selected{% endif %}>Ecuador</option>
+              <option value="Ireland" {% if form['native.country'] == 'Ireland' %}selected{% endif %}>Ireland</option>
+              <option value="Hong" {% if form['native.country'] == 'Hong' %}selected{% endif %}>Hong</option>
+              <option value="Cambodia" {% if form['native.country'] == 'Cambodia' %}selected{% endif %}>Cambodia</option>
+              <option value="Trinadad&amp;Tobago" {% if form['native.country'] == 'Trinadad&Tobago' %}selected{% endif %}>Trinadad&amp;Tobago</option>
+              <option value="Laos" {% if form['native.country'] == 'Laos' %}selected{% endif %}>Laos</option>
+              <option value="Thailand" {% if form['native.country'] == 'Thailand' %}selected{% endif %}>Thailand</option>
+              <option value="Yugoslavia" {% if form['native.country'] == 'Yugoslavia' %}selected{% endif %}>Yugoslavia</option>
+              <option value="Outlying-US(Guam-USVI-etc)" {% if form['native.country'] == 'Outlying-US(Guam-USVI-etc)' %}selected{% endif %}>Outlying-US(Guam-USVI-etc)</option>
+              <option value="Hungary" {% if form['native.country'] == 'Hungary' %}selected{% endif %}>Hungary</option>
+              <option value="Honduras" {% if form['native.country'] == 'Honduras' %}selected{% endif %}>Honduras</option>
+              <option value="Scotland" {% if form['native.country'] == 'Scotland' %}selected{% endif %}>Scotland</option>
+              <option value="Holand-Netherlands" {% if form['native.country'] == 'Holand-Netherlands' %}selected{% endif %}>Holand-Netherlands</option>
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Work &amp; Education</legend>
+        <div class="grid">
+
+          <div class="field">
+            <label for="workclass">Work class</label>
+            <select id="workclass" name="workclass">
+              <option value="Private" {% if form['workclass'] == 'Private' %}selected{% endif %}>Private</option>
+              <option value="Self-emp-not-inc" {% if form['workclass'] == 'Self-emp-not-inc' %}selected{% endif %}>Self-emp-not-inc</option>
+              <option value="Self-emp-inc" {% if form['workclass'] == 'Self-emp-inc' %}selected{% endif %}>Self-emp-inc</option>
+              <option value="Federal-gov" {% if form['workclass'] == 'Federal-gov' %}selected{% endif %}>Federal-gov</option>
+              <option value="Local-gov" {% if form['workclass'] == 'Local-gov' %}selected{% endif %}>Local-gov</option>
+              <option value="State-gov" {% if form['workclass'] == 'State-gov' %}selected{% endif %}>State-gov</option>
+              <option value="Without-pay" {% if form['workclass'] == 'Without-pay' %}selected{% endif %}>Without-pay</option>
+              <option value="Never-worked" {% if form['workclass'] == 'Never-worked' %}selected{% endif %}>Never-worked</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="occupation">Occupation</label>
+            <select id="occupation" name="occupation">
+              <option value="Prof-specialty" {% if form['occupation'] == 'Prof-specialty' %}selected{% endif %}>Prof-specialty</option>
+              <option value="Exec-managerial" {% if form['occupation'] == 'Exec-managerial' %}selected{% endif %}>Exec-managerial</option>
+              <option value="Adm-clerical" {% if form['occupation'] == 'Adm-clerical' %}selected{% endif %}>Adm-clerical</option>
+              <option value="Sales" {% if form['occupation'] == 'Sales' %}selected{% endif %}>Sales</option>
+              <option value="Craft-repair" {% if form['occupation'] == 'Craft-repair' %}selected{% endif %}>Craft-repair</option>
+              <option value="Tech-support" {% if form['occupation'] == 'Tech-support' %}selected{% endif %}>Tech-support</option>
+              <option value="Other-service" {% if form['occupation'] == 'Other-service' %}selected{% endif %}>Other-service</option>
+              <option value="Machine-op-inspct" {% if form['occupation'] == 'Machine-op-inspct' %}selected{% endif %}>Machine-op-inspct</option>
+              <option value="Transport-moving" {% if form['occupation'] == 'Transport-moving' %}selected{% endif %}>Transport-moving</option>
+              <option value="Handlers-cleaners" {% if form['occupation'] == 'Handlers-cleaners' %}selected{% endif %}>Handlers-cleaners</option>
+              <option value="Farming-fishing" {% if form['occupation'] == 'Farming-fishing' %}selected{% endif %}>Farming-fishing</option>
+              <option value="Protective-serv" {% if form['occupation'] == 'Protective-serv' %}selected{% endif %}>Protective-serv</option>
+              <option value="Priv-house-serv" {% if form['occupation'] == 'Priv-house-serv' %}selected{% endif %}>Priv-house-serv</option>
+              <option value="Armed-Forces" {% if form['occupation'] == 'Armed-Forces' %}selected{% endif %}>Armed-Forces</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="education">Education</label>
+            <select id="education" name="education">
+              <option value="Preschool" {% if form['education'] == 'Preschool' %}selected{% endif %}>Preschool</option>
+              <option value="1st-4th" {% if form['education'] == '1st-4th' %}selected{% endif %}>1st-4th</option>
+              <option value="5th-6th" {% if form['education'] == '5th-6th' %}selected{% endif %}>5th-6th</option>
+              <option value="7th-8th" {% if form['education'] == '7th-8th' %}selected{% endif %}>7th-8th</option>
+              <option value="9th" {% if form['education'] == '9th' %}selected{% endif %}>9th</option>
+              <option value="10th" {% if form['education'] == '10th' %}selected{% endif %}>10th</option>
+              <option value="11th" {% if form['education'] == '11th' %}selected{% endif %}>11th</option>
+              <option value="12th" {% if form['education'] == '12th' %}selected{% endif %}>12th</option>
+              <option value="HS-grad" {% if form['education'] == 'HS-grad' %}selected{% endif %}>HS-grad</option>
+              <option value="Some-college" {% if form['education'] == 'Some-college' %}selected{% endif %}>Some-college</option>
+              <option value="Assoc-voc" {% if form['education'] == 'Assoc-voc' %}selected{% endif %}>Assoc-voc</option>
+              <option value="Assoc-acdm" {% if form['education'] == 'Assoc-acdm' %}selected{% endif %}>Assoc-acdm</option>
+              <option value="Bachelors" {% if form['education'] == 'Bachelors' %}selected{% endif %}>Bachelors</option>
+              <option value="Masters" {% if form['education'] == 'Masters' %}selected{% endif %}>Masters</option>
+              <option value="Prof-school" {% if form['education'] == 'Prof-school' %}selected{% endif %}>Prof-school</option>
+              <option value="Doctorate" {% if form['education'] == 'Doctorate' %}selected{% endif %}>Doctorate</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="education.num">Education number</label>
+            <input type="number" id="education.num" name="education.num" min="1" max="16" step="1"
+                   value="{{ form['education.num'] }}" required>
+            <span class="hint">Years of schooling as a rank, 1 = Preschool to 16 = Doctorate. Should match the education level above.</span>
+          </div>
+
+          <div class="field">
+            <label for="hours.per.week">Hours per week</label>
+            <input type="number" id="hours.per.week" name="hours.per.week" min="1" max="99" step="1"
+                   value="{{ form['hours.per.week'] }}" required>
+          </div>
+
+          <div class="field">
+            <label for="fnlwgt">Final weight (fnlwgt)</label>
+            <input type="number" id="fnlwgt" name="fnlwgt" min="1" max="2000000" step="1"
+                   value="{{ form['fnlwgt'] }}" required>
+            <span class="hint">Census sampling weight. Leave at the default if unsure.</span>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Financial</legend>
+        <div class="grid">
+
+          <div class="field">
+            <label for="capital.gain">Capital gain ($)</label>
+            <input type="number" id="capital.gain" name="capital.gain" min="0" max="100000" step="1"
+                   value="{{ form['capital.gain'] }}" required>
+          </div>
+
+          <div class="field">
+            <label for="capital.loss">Capital loss ($)</label>
+            <input type="number" id="capital.loss" name="capital.loss" min="0" max="5000" step="1"
+                   value="{{ form['capital.loss'] }}" required>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit">Predict Income</button>
+      </div>
+
+    </form>
+
+    <footer class="footer">
+      <p>
+        API: <code>POST /predict</code> with a JSON body &middot;
+        Health check: <code>GET /health</code>
+      </p>
+    </footer>
+
+  </main>
+</body>
+</html>
